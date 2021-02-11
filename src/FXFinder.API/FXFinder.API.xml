@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FXFinder.API</name>
+    </assembly>
+    <members>
+        <member name="M:FXFinder.API.Controllers.AuthController.Login(FXFinder.Core.Models.LoginModel)">
+            <summary>
+            This End creates new users where they can choose their user role - Noob or Elite
+            </summary>
+            <remarks>
+            Use as sample Elite/Noob creation
+            {
+               "username": "OvoDGreat",
+               "password": "123456"
+            }
+            </remarks>
+            <param name="user"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FXFinder.API.Controllers.AuthController.Register(FXFinder.Core.Models.SignUp)">
+            <summary>
+            This End creates new users where they can choose their user role - Noob or Elite
+            </summary>
+            <remarks>
+            Use as sample Elite/Noob creation
+              {
+                "currencySymbol": "eur",
+                  "username": "OvoDGreat",
+                  "email": "OvoDGreat@gmail.com",
+                   "password": "123456",
+                "role": "Elite"
+            }
+            Note When you run the application for first time, admin is created
+            with username=adminovo, password=01234Admin
+            </remarks>
+            <param name="userdto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FXFinder.API.Controllers.AuthController.AdminPower(FXFinder.Core.Models.AdminPowers)">
+             <summary>
+             This End point is only accessed by Admin. to demote or promote user - noob to elite, elite to noob.
+             Note:  "PromoteOrDemote" is set to true if user should be demoted.
+             </summary>
+             
+            <remarks>
+             {
+                 "Username": "cobol",
+                   "userId": 1,
+                   "PromoteOrDemote":true
+             }
+             </remarks>
+             <param name="userdto"></param>
+             <returns></returns>
+        </member>
+        <member name="M:FXFinder.API.Controllers.CurrencyController.Post(FXFinder.Core.Models.CurrencyChangeModel)">
+            <summary>
+            This End point is only accessed by Admin. to change main currency of users.
+            </summary>
+            <remarks>
+            {
+               "symbol":"eur",
+                "userId": 2
+            }
+            </remarks>
+            <param name="model">
+            you have to pass the currency symbol that will replace the main currency
+            then the userId also
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:FXFinder.API.Controllers.WalletController.Post(FXFinder.Core.Models.WalletModel)">
+            <summary>
+            This endpoint creates a wallet for users
+            Payload to pass is shown below
+            </summary>
+            <remarks>
+            {
+               "currencySymbolToCreateWallet": "eur" 
+            }
+            </remarks>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FXFinder.API.Controllers.WalletController.FundWallet(FXFinder.Core.Models.FundWalletModel)">
+            <summary>
+            This endpoint is called to fund a wallet. 
+            Payload to pass is shown below
+            </summary>
+            <remarks>
+            {
+               "Symbol": "eur",
+                "Amount":25,
+                "UserId":2,
+                "AcctDigits":"0093457"   
+            }
+            </remarks>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FXFinder.API.Controllers.WalletController.WithdrawFund(FXFinder.Core.Models.FundWalletModel)">
+            <summary>
+            This endpoint is called to Withdraw from a wallet. 
+            Payload to pass is shown below
+            </summary>
+            <remarks>
+            {
+               "Symbol": "eur",
+                "Amount":25,
+                "UserId":2,
+                "AcctDigits":"0093457"   
+            }
+            </remarks>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FXFinder.API.Controllers.WalletController.CheckFunds(System.String)">
+            <summary>
+            The need for this endpoint is for noob users to be able to check if 
+            funds have been approved.
+            Payload to pass is shown below
+            And its passed as a query string
+            </summary>
+            <remarks>
+            checkfunds/0045674
+            </remarks>
+            <param name="walletdigits"></param>
+            <returns></returns>
+        </member>
+        <member name="M:FXFinder.API.Controllers.WalletController.ApproveFunds">
+            <summary>
+            This endpoint is used by Only admin to Approve funding.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
