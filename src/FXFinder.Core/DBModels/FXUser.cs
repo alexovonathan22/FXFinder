@@ -18,6 +18,7 @@ namespace FXFinder.Core.DBModels
         public bool IsPhoneNumConfirm { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+        public string OTP { get; set; } // when OTP is verified this should be deleted for the user.
 
     }
 }

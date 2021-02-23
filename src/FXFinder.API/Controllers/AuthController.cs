@@ -30,10 +30,10 @@ namespace FXFinder.API.Controllers
         }
 
         /// <summary>
-        /// This End creates new users where they can choose their user role - Noob or Elite
+        /// This End creates Logs users into the app.
         /// </summary>
         /// <remarks>
-        /// Use as sample Elite/Noob creation
+        /// 
         /// {
         ///    "username": "OvoDGreat",
         ///    "password": "123456"
@@ -64,23 +64,24 @@ namespace FXFinder.API.Controllers
 
         }
 
-    /// <summary>
-    /// This End creates new users where they can choose their user role - Noob or Elite
-    /// </summary>
-    /// <remarks>
-    /// Use as sample Elite/Noob creation
-    ///   {
-    ///     "currencySymbol": "eur",
-    ///       "username": "OvoDGreat",
-    ///       "email": "OvoDGreat@gmail.com",
-    ///        "password": "123456",
-    ///     "role": "Elite"
-    /// }
-    /// Note When you run the application for first time, admin is created
-    /// with username=adminovo, password=01234Admin
-    /// </remarks>
-    /// <param name="userdto"></param>
-    /// <returns></returns>
+        /// <summary>
+        /// This End creates new users.
+        /// </summary>
+        /// <remarks>
+        /// User Sample:
+        ///  {
+        ///       "username": "string",
+        ///       "email": "string",
+        ///        "password": "string",
+        ///        "firstName": "string",
+        ///        "lastName": "string",
+        ///     "phoneNumber": "string"
+        ///  }
+        /// Note When you run the application for first time, admin is created
+        /// with username=adminovo, password=01234Admin
+        /// </remarks>
+        /// <param name="userdto"></param>
+        /// <returns></returns>
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(SignUp userdto)
@@ -88,7 +89,7 @@ namespace FXFinder.API.Controllers
             var response = new APIResponse();
             response.StatusCode = "01";
             response.Error = null;
-            var (user, message) = await _auth.RegisterUser(userdto); ;
+            var (user, message) = await _auth.RegisterUser(userdto); 
             if (user != null)
             {
                 response.Result = user;
@@ -101,39 +102,26 @@ namespace FXFinder.API.Controllers
             return BadRequest(response);
         }
 
-        /// <summary>
-        /// This End point is only accessed by Admin. to demote or promote user - noob to elite, elite to noob.
-        /// Note:  "PromoteOrDemote" is set to true if user should be demoted.
-        /// </summary>
-        /// 
-        ///<remarks>
-        /// {
-        ///     "Username": "cobol",
-        ///       "userId": 1,
-        ///       "PromoteOrDemote":true
-        /// }
-        /// </remarks>
-        /// <param name="userdto"></param>
-        /// <returns></returns>
-        [HttpPost("promoteuser")]
-        [Authorize(Policy = "AuthorizedAdmin")]
-        public async Task<IActionResult> AdminPower(AdminPowers userdto)
-        {
-            var response = new APIResponse();
-            response.StatusCode = "01";
-            response.Result = null;
-            var (user, message) = await _authAdmin.UpgradeDownGrade(userdto); ;
-            if (user != null)
-            {
-                response.Result = user;
-                response.StatusCode = "00";
-                response.ApiMessage = message;
-                return Ok(response);
-            }
-            response.ApiMessage = message;
 
-            return BadRequest(response);
-        }
+        //[HttpPost("promoteuser")]
+        //[Authorize(Policy = "AuthorizedAdmin")]
+        //public async Task<IActionResult> AdminPower(AdminPowers userdto)
+        //{
+        //    var response = new APIResponse();
+        //    response.StatusCode = "01";
+        //    response.Result = null;
+        //    var (user, message) = await _authAdmin.UpgradeDownGrade(userdto); ;
+        //    if (user != null)
+        //    {
+        //        response.Result = user;
+        //        response.StatusCode = "00";
+        //        response.ApiMessage = message;
+        //        return Ok(response);
+        //    }
+        //    response.ApiMessage = message;
+
+        //    return BadRequest(response);
+        //}
 
 
         // [HttpPost("refresh")]
@@ -155,14 +143,19 @@ namespace FXFinder.API.Controllers
         //     return BadRequest(response);
         // }
 
-        [HttpPost("verify/{username}")]
-        [Authorize(Policy = "AuthorizedAdmin")]
-        public async Task<IActionResult> VerifyUser(string username)
+        /// <summary>
+        ///  This End point verifies user email
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("verify")]
+        [Authorize(Policy = "AuthorizedUser")]
+        public async Task<IActionResult> VerifyUser(OneTimePassword model)
         {
             var response = new APIResponse();
             response.StatusCode = "01";
             response.Result = null;
-            var (user, message) = await _auth.VerifyUserEmail(username); ;
+            var (user, message) = await _auth.VerifyUserEmail(model); ;
             if (user != null)
             {
                 response.Result = user;

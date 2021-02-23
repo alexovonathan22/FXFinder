@@ -14,6 +14,7 @@ using FXFinder.Core.Managers.Interfaces;
 using FXFinder.Core.Models;
 using FXFinder.Core.Util;
 using System.Net.Mail;
+using FXFinder.Core.Util.Models;
 
 namespace FXFinder.Core.Managers
 {
@@ -21,19 +22,22 @@ namespace FXFinder.Core.Managers
     {
         #region fields
         private readonly IRepository<FXUser> repository;
+        private readonly IEmailUtil _mail;
+
         private readonly ILogger<AuthManager> log;
         private readonly IConfiguration configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWalletManager _wallet;
 
         #endregion
-        public AuthManager(IRepository<FXUser> repository, ILogger<AuthManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWalletManager wallet)
+        public AuthManager(IRepository<FXUser> repository, ILogger<AuthManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWalletManager wallet, IEmailUtil mail)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.log = log ?? throw new ArgumentNullException(nameof(log));
             this.configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
             _wallet = wallet;
+            _mail = mail;
         }
 
         /// <summary>
@@ -58,6 +62,7 @@ namespace FXFinder.Core.Managers
             catch (Exception e)
             {
                 log.LogError($"{e.Message}");
+                return null;
             }
 
 
@@ -122,25 +127,33 @@ namespace FXFinder.Core.Managers
                     Role = UserRoles.User
                 };
 
-                var newuser = await repository.Insert(userDetails);
-                var returnView = new UserView
-                {
-                    Username=newuser.Username,
-                    Email=newuser.Email,
-                    LastName=model.LastName,
-                    FirstName=model.FirstName,
-                    Message = $"An Email has been sent to {model.Email} for verification.",
-                    VerifyUrl = $"verify{newuser.Username}"
-
-                };
-      
                 //Send verification notification 
-                if (newuser != null)
-                {
-                    // Verificaion logic
+                Random rand = new Random();
+                string digits = rand.Next(0, 999999).ToString("D6");
+                var msg = new EmailMessage();
+                msg.ToEmail = model.Email;
+                msg.Subject = $"Security Code - OTP";
+                msg.Body = $"Your OTP is {digits}";
 
+                userDetails.OTP = digits;
+                var newuser = await repository.Insert(userDetails);
+               
+                var sendmail = await _mail.SendEmailAsync(msg);
+
+                if (sendmail)
+                {
+                    var returnView = new UserView
+                    {
+                        Username = newuser.Username,
+                        Email = newuser.Email,
+                        LastName = model.LastName,
+                        FirstName = model.FirstName,
+                        Message = $"An Email has been sent to {model.Email} for verification.",
+                        IsVerified = false
+                    };
+
+                    return (user: returnView, message: $"User created successfully. Check email {model.Email} for an OTP.");
                 }
-                return (user: returnView, message: "User created successfully.");
             }
             return (user: null, message: $"Something went wrong.");
         }
@@ -151,28 +164,33 @@ namespace FXFinder.Core.Managers
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        public async Task<(UserView user, string message)> VerifyUserEmail(string username)
+        public async Task<(UserView user, string message)> VerifyUserEmail(OneTimePassword otp)
         {
-            var userExists = await repository.FirstOrDefault(r => r.Username == username);
+            var userExists = await repository.FirstOrDefault(r => r.Username == otp.Username);
             if (userExists == null)
             {
-                return (user: null, message: @$"PLease Create an account with us. {username} doesn't exist");
+                return (user: null, message: @$"PLease Create an account with us. {otp.Username} doesn't exist");
             }
 
-            userExists.IsEmailConfirm = true;
-            await repository.Update(userExists);
-            var returnView = new UserView
+            if(userExists.OTP == otp.Otp)
             {
-                Username = userExists.Username,
-                Email = userExists.Email,
-                IsVerified = true,
-                Message = $"An Email has been sent to {userExists.Email} for verification."
+                userExists.IsEmailConfirm = true;
+                userExists.OTP = string.Empty;
+                await repository.Update(userExists);
+                var returnView = new UserView
+                {
+                    Username = userExists.Username,
+                    Email = userExists.Email,
+                    IsVerified = true,
+                    Message = $"{userExists.Username}, your account verified."
 
-            };
+                };
 
-           
-            return (user: returnView, message: "User verified successfully.");
-            
+
+                return (user: returnView, message: "User verified successfully.");
+            }
+
+            return (user: null, message: "User verification unsuccessful.");
         }
     }
    
