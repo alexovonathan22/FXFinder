@@ -278,7 +278,6 @@ namespace FXFinder.Core.Managers
                 newWallet.CreatedBy = userctx;
                 newWallet.CurrencySymbol = newwallet.CurrencySymbol;
                 newWallet.CurrnencyTitle = newwallet.CurrencyTitle;
-                newWallet.IsFundOrWithdrawApproved = true;
                 newWallet.UserId = newwallet.UserId;
                 await _walletrepo.Update(newWallet);
 
@@ -300,7 +299,6 @@ namespace FXFinder.Core.Managers
                 selectedWallet.CreatedAt = DateTime.Now;
                 selectedWallet.ModifiedAt = DateTime.Now;
                 selectedWallet.CreatedBy = userctx;
-                selectedWallet.IsFundOrWithdrawApproved = true;
                 
                 await _walletrepo.Update(selectedWallet);
 
@@ -343,7 +341,6 @@ namespace FXFinder.Core.Managers
                     message = $"Successful. wallet is funded.";
                     fundedResponse.IsApproved = true;
                     walletdto.Amount = walletdto.GrandAmount;
-                    walletdto.IsFundOrWithdrawApproved = true;
                 }
 
                 // Update wallet in db when admin has approved
@@ -416,7 +413,7 @@ namespace FXFinder.Core.Managers
                     var withdraw = getUserWallet.GrandAmount - model.Amount;
                     walletdto.IsCurrencyConverted = true;
                     walletdto.GrandAmount = withdraw;
-                    walletdto.IsFundOrWithdrawApproved = false;
+
                     // Update wallet in db when admin has approved
                     await _walletrepo.Update(walletdto);
                     fundedResponse.AcctDigits = getUserWallet.AcctDigits;
@@ -437,7 +434,6 @@ namespace FXFinder.Core.Managers
                     walletdto.IsCurrencyConverted = conversionresult.Success;
                     var withdraw = getUserWallet.GrandAmount - conversionresult.Result;
                     walletdto.GrandAmount = withdraw;
-                    walletdto.IsFundOrWithdrawApproved = false;
 
                     await _walletrepo.Update(walletdto);
                     fundedResponse.AcctDigits = getUserWallet.AcctDigits;
@@ -469,7 +465,6 @@ namespace FXFinder.Core.Managers
                     eliteMainCurrWallet.Amount = withdraw;
                     eliteMainCurrWallet.IsCurrencyConverted = true;
                     eliteMainCurrWallet.ActionTaken = $"Withdrew {eliteMainCurrWallet.CurrencySymbol} {model.Amount}";
-                    eliteMainCurrWallet.IsFundOrWithdrawApproved = true;
                     // Update wallet in db when admin has approved
                     await _walletrepo.Update(eliteMainCurrWallet);
                     fundedResponse.AcctDigits = eliteMainCurrWallet.AcctDigits;
@@ -500,7 +495,6 @@ namespace FXFinder.Core.Managers
                     elitewallet.ModifiedBy = userCtx;
                     elitewallet.Amount = withdraw;
                     elitewallet.IsCurrencyConverted = true;
-                    elitewallet.IsFundOrWithdrawApproved = true;
                     elitewallet.ActionTaken = $"Withdrew {elitewallet.CurrencySymbol} {model.Amount}";
                     
                     // Update wallet in db when admin has approved
@@ -527,7 +521,6 @@ namespace FXFinder.Core.Managers
                         eliteMainCurrWallet.IsCurrencyConverted = conversionresult.Success;
                         var withdraw = eliteMainCurrWallet.GrandAmount - conversionresult.Result;
                         eliteMainCurrWallet.GrandAmount = withdraw;
-                        eliteMainCurrWallet.IsFundOrWithdrawApproved = true;
                         eliteMainCurrWallet.ModifiedAt = DateTime.Now;
                         eliteMainCurrWallet.ModifiedBy = userCtx;
                         eliteMainCurrWallet.Amount = withdraw;
@@ -593,7 +586,7 @@ namespace FXFinder.Core.Managers
 
             if (userInDb.Role == UserRoles.Admin) 
             {
-                var getUnApproved = await _walletrepo.LoadWhere(t => t.IsCurrencyConverted == true && t.IsFundOrWithdrawApproved == false);
+                var getUnApproved = await _walletrepo.LoadWhere(t => t.IsCurrencyConverted == true);
                 if (getUnApproved.Count == 0) return (entity: null, Message: $"No records for approval.");
 
                 var response = new ApprovedFundsModel();
@@ -601,7 +594,6 @@ namespace FXFinder.Core.Managers
                 var lists = getUnApproved;
                 foreach(var wallet in lists)
                 {
-                    wallet.IsFundOrWithdrawApproved = true;
                     wallet.Amount = wallet.GrandAmount;
                     ListOfWalletAcctApproved.Add(wallet.AcctDigits);
                 }

@@ -8,8 +8,6 @@ namespace FXFinder.Core.Models
     public class SignUp
     {
         [Required]
-        public string CurrencySymbol { get; set; }
-        [Required]
         public string Username { get; set; }
 
         [Required]
@@ -18,7 +16,11 @@ namespace FXFinder.Core.Models
         [Required]
         public string Password { get; set; }
         [Required]
-        public string Role { get; set; } // Role might change depending on project requirements.
+        public string FirstName { get; set; } 
+        [Required]
+        public string LastName { get; set; } 
+        [Required]
+        public string PhoneNumber { get; set; } 
 
     }
 }

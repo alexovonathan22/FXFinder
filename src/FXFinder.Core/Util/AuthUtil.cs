@@ -119,7 +119,7 @@ namespace FXFinder.Core.Util
                 var emailValidate = new MailAddress(email);
                 return (IsValid: true, email: emailValidate);
 
-            }catch(FormatException e)
+            }catch(FormatException)
             {
                 return (IsValid: false, email: null);
             }

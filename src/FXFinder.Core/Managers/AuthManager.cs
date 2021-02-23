@@ -20,14 +20,14 @@ namespace FXFinder.Core.Managers
     public class AuthManager : IAuthManager
     {
         #region fields
-        private readonly IRepository<User> repository;
+        private readonly IRepository<FXUser> repository;
         private readonly ILogger<AuthManager> log;
         private readonly IConfiguration configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWalletManager _wallet;
 
         #endregion
-        public AuthManager(IRepository<User> repository, ILogger<AuthManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWalletManager wallet)
+        public AuthManager(IRepository<FXUser> repository, ILogger<AuthManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWalletManager wallet)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.log = log ?? throw new ArgumentNullException(nameof(log));
@@ -36,24 +36,26 @@ namespace FXFinder.Core.Managers
             _wallet = wallet;
         }
 
-
+        /// <summary>
+        /// Service method to log a user in.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public async Task<TokenModel> LogUserIn(LoginModel model)
         {
             if (model == null) return null;
-            User user = new User();
+            FXUser user = new FXUser();
             var userContext = _httpContextAccessor.HttpContext.User.Identity.Name;
-            //var userIdentity = (ClaimsIdentity)userContext.Identity;
-            //var claim = userIdentity.Claims.ToList();
-            //var roleClaimType = userIdentity.RoleClaimType;
-            //var roles = claim.Where(c => c.Type == ClaimTypes.Role).Select(d => d.Value).ToList();
-            log.LogInformation($"=>> {userContext}");
+            //_httpContextAccessor.HttpContext.Request.
+            //get bsae url wt above
+            log.LogInformation($"Attempting to retrieve user {userContext} info.");
             try
             {
 
                 user = await repository.FirstOrDefault(u => u.Username == model.Username);
                 if (user == null) return null;
             }
-            catch (DbUpdateException e)
+            catch (Exception e)
             {
                 log.LogError($"{e.Message}");
             }
@@ -75,20 +77,28 @@ namespace FXFinder.Core.Managers
 
             await repository.Update(user);
             return new TokenModel 
-                { Token = token, RefreshToken = refreshToken, Email=user.Email, UserID=user.Id,
-                    Role=user.Role, Username=user.Username
-                };
+            { 
+                Token = token, 
+                RefreshToken = refreshToken,
+                Email=user.Email, 
+                UserID=user.Id,
+                Role=user.Role, 
+                Username=user.Username
+            };
             //throw new NotImplementedException("h");
         }
 
-
+        /// <summary>
+        /// Service method to register a new user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public async Task<(UserView user, string message)> RegisterUser(SignUp model)
         {
-            User userExists = null;
-            var checkrole = model.Role == UserRoles.Noob || model.Role == UserRoles.Elite;
-            if (!checkrole)
+            var userExists = await repository.FirstOrDefault(r => r.Username == model.Username);
+            if (userExists != null)
             {
-                return (user: null, message: $"User role incorrect. Do this pass; 'Noob' or 'Elite'.");
+                return (user: null, message: $"User {userExists.Username} exists.");
             }
             // Validate Email-add in-app
             var (IsValid, Email) = AuthUtil.ValidateEmail(model.Email);
@@ -97,30 +107,19 @@ namespace FXFinder.Core.Managers
             {
                 return (user: null, message: $"Email format incorrect.");
             }
-            userExists = await repository.FirstOrDefault(r => r.Username == model.Username);
 
             if (userExists == null)
             {
-                var toCapsSymbol = model.CurrencySymbol.ToUpperInvariant();
-
-                var symbolName = configuration[$"SupportedSymbols:{toCapsSymbol}"];
-                if (string.IsNullOrEmpty(symbolName)) return (user: null, message: $"Enter a correct currency symbol, {model.CurrencySymbol} incorrect.");
-                if (userExists != null) return (user: null, message: $"User {model.Username} exists.");
-                //if (userExists.Role === null) return (user: null, message: $"User {model.Username} not allowed to have a user acct!");
-
-               
 
                 AuthUtil.CreatePasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                var userDetails = new User
+                var userDetails = new FXUser
                 {
                     CreatedAt = DateTime.Now,
                     PasswordHash = passwordHash,
                     PasswordSalt = passwordSalt,
                     Username = model.Username,
                     Email = model.Email,
-                    CurrencySymbol=toCapsSymbol,
-                    CurrencyTitle =symbolName,
-                    Role = model.Role
+                    Role = UserRoles.User
                 };
 
                 var newuser = await repository.Insert(userDetails);
@@ -128,25 +127,53 @@ namespace FXFinder.Core.Managers
                 {
                     Username=newuser.Username,
                     Email=newuser.Email,
-                    MainCurrency=symbolName,
-                    MainSymbol = toCapsSymbol,
-                    Role = model.Role
+                    LastName=model.LastName,
+                    FirstName=model.FirstName,
+                    Message = $"An Email has been sent to {model.Email} for verification.",
+                    VerifyUrl = $"verify{newuser.Username}"
 
                 };
       
-                // Create Wallet for an Elite only with main currency at signup. 
-                if (newuser.Role == UserRoles.Elite || newuser.Role==UserRoles.Noob)
+                //Send verification notification 
+                if (newuser != null)
                 {
-                    var (wallet, message) = await _wallet.GenerateWallet(newuser, symbolName, toCapsSymbol, newuser.Username);
+                    // Verificaion logic
 
-                    returnView.WalletAccounts = wallet;
-                    returnView.Message = $"Successful sign up. A {newuser.CurrencySymbol} wallet which is your main currency created for you wallet acct digits is {wallet.WalletAcct}";
                 }
                 return (user: returnView, message: "User created successfully.");
             }
-            return (user: null, message: $"User {model.Username} exists already!");
+            return (user: null, message: $"Something went wrong.");
         }
 
+        /// <summary>
+        /// Service method to Verify user for now via email.
+        /// Note: If a user is not verified such a one cannot create a wallet.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public async Task<(UserView user, string message)> VerifyUserEmail(string username)
+        {
+            var userExists = await repository.FirstOrDefault(r => r.Username == username);
+            if (userExists == null)
+            {
+                return (user: null, message: @$"PLease Create an account with us. {username} doesn't exist");
+            }
+
+            userExists.IsEmailConfirm = true;
+            await repository.Update(userExists);
+            var returnView = new UserView
+            {
+                Username = userExists.Username,
+                Email = userExists.Email,
+                IsVerified = true,
+                Message = $"An Email has been sent to {userExists.Email} for verification."
+
+            };
+
+           
+            return (user: returnView, message: "User verified successfully.");
+            
+        }
     }
    
 }

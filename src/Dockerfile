@@ -19,4 +19,6 @@ RUN dotnet publish "FXFinder.API.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "FXFinder.API.dll"]
+#ENTRYPOINT ["dotnet", "FXFinder.API.dll"]
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet FXFinder.API.dll
+

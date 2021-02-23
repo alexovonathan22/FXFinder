@@ -9,10 +9,12 @@ namespace FXFinder.Core.Models
     {
         public string Email { get; set; }
         public string Username { get; set; }
-        public string Role { get; set; }
-        public string MainCurrency { get; set; }
-        public string MainSymbol { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public string PhoneNumber { get; set; }
         public WalletView WalletAccounts { get; set; }
         public string Message { get; set; }
+        public bool IsVerified { get; set; }
+        public string  VerifyUrl { get; set; }
     }
 }

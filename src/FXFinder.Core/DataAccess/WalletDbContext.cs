@@ -11,7 +11,7 @@ namespace FXFinder.Core.DataAccess
         public WalletDbContext(DbContextOptions<WalletDbContext> options)
      : base(options)
         { }
-        public DbSet<User> Users { get; set; }
+        public DbSet<FXUser> Users { get; set; }
         public DbSet<Wallet> WalletAccts { get; set; }
       
         // Todo : Seed DB with admin user credentials

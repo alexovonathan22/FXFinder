@@ -87,7 +87,7 @@ namespace FXFinder.API
             #endregion
             services.AddHttpContextAccessor();
             // Adding CORS allowing all origin for development purposes
-            services.AddCors();
+            
             services.AddHttpClient("FixerApi", client =>
             {
                 client.BaseAddress = new Uri(baseurl);
@@ -147,7 +147,7 @@ namespace FXFinder.API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FXFinder.API v1"));
             }
-
+            
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseRouting();

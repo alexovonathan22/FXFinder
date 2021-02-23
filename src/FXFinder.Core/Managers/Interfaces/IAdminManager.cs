@@ -10,6 +10,5 @@ namespace FXFinder.Core.Managers.Interfaces
     public interface IAdminManager
     {
         Task<(PromotionDetail details, string message)> UpgradeDownGrade(AdminPowers model);
-
     }
 }

@@ -81,7 +81,7 @@ namespace FXFinder.API.Controllers
     /// </remarks>
     /// <param name="userdto"></param>
     /// <returns></returns>
-    [HttpPost("register")]
+        [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(SignUp userdto)
         {
@@ -154,6 +154,26 @@ namespace FXFinder.API.Controllers
 
         //     return BadRequest(response);
         // }
+        [HttpPost("verify/{username}")]
+        [Authorize(Policy = "AuthorizedAdmin")]
+        public async Task<IActionResult> VerifyUser(string username)
+        {
+            var response = new APIResponse();
+            response.StatusCode = "01";
+            response.Result = null;
+            var (user, message) = await _auth.VerifyUserEmail(username); ;
+            if (user != null)
+            {
+                response.Result = user;
+                response.StatusCode = "00";
+                response.ApiMessage = message;
+                return Ok(response);
+            }
+            response.ApiMessage = message;
+
+            return BadRequest(response);
+        }
+
 
     }
 }

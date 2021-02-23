@@ -73,7 +73,6 @@ namespace FXFinder.Core.Managers
                 userWalletToChangeCurr.GrandAmount = entity.Result;
                 userWalletToChangeCurr.Amount = entity.Result;
                 userWalletToChangeCurr.IsCurrencyConverted = entity.Success;
-                userWalletToChangeCurr.IsFundOrWithdrawApproved = true;
                 userWalletToChangeCurr.User = userModel;
                 
                 await _userrepository.Update(userModel);
