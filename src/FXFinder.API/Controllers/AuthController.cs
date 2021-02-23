@@ -154,6 +154,7 @@ namespace FXFinder.API.Controllers
 
         //     return BadRequest(response);
         // }
+
         [HttpPost("verify/{username}")]
         [Authorize(Policy = "AuthorizedAdmin")]
         public async Task<IActionResult> VerifyUser(string username)

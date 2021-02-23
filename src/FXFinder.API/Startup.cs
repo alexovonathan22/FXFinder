@@ -23,6 +23,7 @@ using FXFinder.Core.DataAccess;
 using FXFinder.Core.DBModels;
 using FXFinder.Core.Managers;
 using FXFinder.Core.Managers.Interfaces;
+using FXFinder.Core.Util.Models;
 
 namespace FXFinder.API
 {
@@ -48,7 +49,7 @@ namespace FXFinder.API
 
             //  Repo Service
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
 
             services.AddDbContext<WalletDbContext>(options => options.UseSqlServer(connstr));
 
