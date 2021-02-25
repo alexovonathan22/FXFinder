@@ -16,7 +16,6 @@ namespace FXFinder.Core.Models
         public string CreatedBy { get; set; }
         public string ActionTaken { get; set; }
         public string WalletAcct { get; set; }
-
         public decimal Amount { get; set; }
     }
 }

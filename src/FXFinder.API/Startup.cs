@@ -70,20 +70,20 @@ namespace FXFinder.API
             services.AddAppAuthentication(jwtSecret);
             services.AddAuthorization(opt =>
             {
+                //Just the admin
                 opt.AddPolicy("AuthorizedAdmin", policy =>
 
                 policy.RequireRole(UserRoles.Admin));
 
+                // Just the user
                 opt.AddPolicy("AuthorizedUsers", policy =>
 
-                policy.RequireRole(UserRoles.Elite, UserRoles.Noob));
+                policy.RequireRole(UserRoles.User));
+                // Just user and admin
+                opt.AddPolicy("AuthorizedUserAdmin", policy =>
 
-                opt.AddPolicy("AuthorizedElite", policy =>
+                policy.RequireRole(UserRoles.User, UserRoles.Admin));
 
-                policy.RequireRole(UserRoles.Elite));
-                opt.AddPolicy("AuthorizedNoob", policy =>
-
-               policy.RequireRole(UserRoles.Noob));
 
             });
 

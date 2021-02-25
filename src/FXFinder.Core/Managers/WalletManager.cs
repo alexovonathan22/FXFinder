@@ -15,16 +15,19 @@ namespace FXFinder.Core.Managers
 {
     public class WalletManager : IWalletManager
     {
+        #region Fields 
         private readonly IRepository<User> _userrepo;
+        private readonly IRepository<FXUser> _fxuser;
         protected WalletDbContext Context;
         private readonly IRepository<Wallet> _walletrepo;
         private readonly ICurrencyManager _currency;
         private readonly ILogger<WalletManager> log;
         private readonly IConfiguration configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        #endregion 
 
-
-        public WalletManager(IRepository<User> userrepo, ILogger<WalletManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IRepository<Wallet> walletrepo, ICurrencyManager currency, WalletDbContext context)
+        #region Constructors
+        public WalletManager(IRepository<User> userrepo, ILogger<WalletManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IRepository<Wallet> walletrepo, ICurrencyManager currency, WalletDbContext context, IRepository<FXUser> fxuser)
         {
             _userrepo = userrepo ?? throw new ArgumentNullException(nameof(userrepo));
             _walletrepo = walletrepo ?? throw new ArgumentNullException(nameof(walletrepo));
@@ -33,8 +36,9 @@ namespace FXFinder.Core.Managers
             _httpContextAccessor = httpContextAccessor;
             _currency = currency;
             Context = context;
+            _fxuser = fxuser;
         }
-
+        #endregion
         /// <summary>
         /// This method creates a wallet for users. but if a noob user has a wallet already it 
         /// returns an error response.
@@ -54,32 +58,19 @@ namespace FXFinder.Core.Managers
             var symbolName = configuration[$"SupportedSymbols:{toCapsSymbol}"];
             if (string.IsNullOrEmpty(symbolName)) return (entity: null, Message: $"Enter a correct currency symbol, {toCapsSymbol} incorrect.");
 
-            var userInDb = await _userrepo.FirstOrDefault(u => u.Username == userCtx);
-            if (userInDb == null) return (entity: null, Message: $"User doesnt exist");
+            var userInDb = await _fxuser.FirstOrDefault(u => u.Username == userCtx && u.IsEmailConfirm == true);
+
             if (userInDb.Role == UserRoles.Admin)
             {
                return (entity: null, Message: $"Admin Can't create a wallet");
             }
 
-            if (userInDb.Role == UserRoles.Noob)
-            {
-                var userwalletexist = await _walletrepo.CountWhere(t => t.UserId == userInDb.Id);
-                if (userwalletexist > 1) return (entity: null, Message: $"Noobs Can't create more than one wallet");
-                if (userInDb.CurrencySymbol != toCapsSymbol)
-                {
-                    return (entity: null, Message: $"You cant use a different currency symbol. Use your registered currency {userInDb.CurrencySymbol}.");
-                }
-                
-                var res = await GenerateWallet(userInDb,symbolName, toCapsSymbol, userCtx);
-                return res;
-            }
-            if (userInDb.Role == UserRoles.Elite)
-            {
-                var res = await GenerateEliteWallet(userInDb, symbolName, toCapsSymbol, userCtx, _=0);
-                return res;
-            }
-            // if (model.InitialAmt < 1) return (entity: null, Message: $"Enter a correct currency symbol, {toCapsSymbol} incorrect.");
-            return (entity: null, Message: $"An error occured creating wallet");
+            if (userInDb == null) return (entity: null, Message: $"{userCtx}, you need to verify your email or phone number.");
+
+            //If User is verified go ahead and create the wallet in specified currency
+            var create = await GenerateWallet(userInDb, toCapsSymbol,symbolName,userCtx);
+           
+            return create;
         }
 
         private async Task<(WalletView entity, string Message)> GenerateEliteWallet(User userInDb, string toCapsSymbol, string symbolName, string userCtx, decimal amt)
@@ -125,12 +116,12 @@ namespace FXFinder.Core.Managers
             return (entity: returnToView, Message: $"Successfully created your wallet.");
         }
 
-        public async Task<(WalletView entity, string Message)> GenerateWallet(User userInDb, string symbolName, string toCapsSymbol, string userCtx)
+        public async Task<(WalletView entity, string Message)> GenerateWallet(FXUser userInDb, string symbolName, string toCapsSymbol, string userCtx)
         {
             Random random = new Random();
             // Any random integer   
             int num = random.Next(10000, 9999999);
-            var walletAcctDigit = $"00{num}";
+            var walletAcctDigit = $"10{num}";
             var newWallet = new Wallet
             {
                 CurrnencyTitle = symbolName,

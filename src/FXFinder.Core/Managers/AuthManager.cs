@@ -183,7 +183,6 @@ namespace FXFinder.Core.Managers
                     Email = userExists.Email,
                     IsVerified = true,
                     Message = $"{userExists.Username}, your account verified."
-
                 };
 
 
