@@ -44,6 +44,33 @@ namespace FXFinder.Test
             Assert.Equal(model.Symbol, cur.NewMainCurrencySymbol);
 
         }
+
+        [Fact]
+        public async Task Test_To_Change_CurrencyAsync_BadResult()
+        {
+            //Arrange
+            var model = new CurrencyChangeModel
+            {
+                Symbol = "EUR",
+                UserId = 2
+            };
+
+            var cur = new CurrencyChange
+            {
+                FormerMainCurrencyTitle = "usd",
+                NewMainCurrencySymbol = "EUR"
+
+            };
+            var currMgr = new Mock<ICurrencyManager>();
+            currMgr.Setup(t => t.ChangeMainCurrency(model.Symbol, model.UserId)).ReturnsAsync((null, string.Empty));
+            var _sut = new CurrencyController(currMgr.Object);
+            //Act
+            var output = await _sut.ChangeUserCurrency(model);
+
+            Assert.IsType<BadRequestObjectResult>(output);
+            Assert.Equal(model.Symbol, cur.NewMainCurrencySymbol);
+
+        }
         [Fact]
         public void Test1()
         {
