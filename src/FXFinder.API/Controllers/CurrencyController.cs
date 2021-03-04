@@ -18,19 +18,17 @@ namespace FXFinder.API.Controllers
     public class CurrencyController : ControllerBase
     {
         private readonly ICurrencyManager _currencyManager;
-        private readonly ILogger<CurrencyController> _log;
 
 
-        public CurrencyController(ILogger<CurrencyController> log, ICurrencyManager currencyManager)
+        public CurrencyController(ICurrencyManager currencyManager)
         {
-            _log = log;
             _currencyManager = currencyManager;
         }
         
         
         // TODO: GET ALL CURRENCY / CUR SYMBOLS
         /// <summary>
-        /// This End point is only accessed by Admin. to change main currency of users.
+        /// This End point is accessed by Users to change wallet currency.
         /// </summary>
         /// <remarks>
         /// {
@@ -45,8 +43,8 @@ namespace FXFinder.API.Controllers
         /// <returns></returns>
         // POST api/<CurrencyController>
         [HttpPost("changecurrency")]
-        [Authorize(Policy = "AuthorizedAdmin")]
-        public async Task<IActionResult> Post(CurrencyChangeModel model)
+        [Authorize(Policy = "AuthorizedUsers")]
+        public async Task<IActionResult> ChangeUserCurrency(CurrencyChangeModel model)
         {
             var response = new APIResponse();
             var (entity, message) = await _currencyManager.ChangeMainCurrency(model.Symbol, model.UserId);

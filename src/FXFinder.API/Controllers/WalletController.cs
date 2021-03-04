@@ -156,7 +156,7 @@ namespace FXFinder.API.Controllers
             response.ApiMessage = message;
             response.Result = entity;
 
-            return BadRequest(response);
+            return NotFound(response);
 
         }
 

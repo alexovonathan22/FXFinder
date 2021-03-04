@@ -46,14 +46,14 @@ namespace FXFinder.API
             var baseurl = Configuration["BaseFixerUrl"];
             var pwd = Configuration["JwtSettings:Password"];
             // for docker db
-            var connectionstr = $@"Server=db,1433;Initial Catalog=walletsystem;User ID=aeon;Password={pwd};";
+            //var connectionstr = $@"Server=db,1433;Initial Catalog=walletsystem;User ID=aeon;Password={pwd};";
 
             //  Repo Service
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IEmailUtil, EmailUtil>();
 
-            services.AddDbContext<WalletDbContext>(options => options.UseSqlServer(connstr));
+            services.AddDbContext<WalletDbContext>(options => options.UseSqlServer(connstr, c => c.MigrationsAssembly("FXFinder.Core")));
 
             #region Managers
 
@@ -79,7 +79,7 @@ namespace FXFinder.API
                 opt.AddPolicy("AuthorizedUsers", policy =>
 
                 policy.RequireRole(UserRoles.User));
-                // Just user and admin
+                // user and admin
                 opt.AddPolicy("AuthorizedUserAdmin", policy =>
 
                 policy.RequireRole(UserRoles.User, UserRoles.Admin));

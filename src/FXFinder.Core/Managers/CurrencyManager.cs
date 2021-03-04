@@ -39,6 +39,10 @@ namespace FXFinder.Core.Managers
             _ctx = ctx;
         }
 
+        public CurrencyManager()
+        {
+        }
+
         public async Task<(CurrencyChange entity, string message)> ChangeMainCurrency(string symbol, int userid)
         {
             var userCtx = _httpContextAccessor.HttpContext.User.Identity.Name;
