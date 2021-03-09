@@ -62,7 +62,7 @@ namespace FXFinder.Test
 
             };
             var currMgr = new Mock<ICurrencyManager>();
-            currMgr.Setup(t => t.ChangeMainCurrency(model.Symbol, model.UserId)).ReturnsAsync((null, string.Empty));
+            currMgr.Setup(t => t.ChangeMainCurrency("kub", model.UserId)).ReturnsAsync((cur, string.Empty));
             var _sut = new CurrencyController(currMgr.Object);
             //Act
             var output = await _sut.ChangeUserCurrency(model);
@@ -71,10 +71,6 @@ namespace FXFinder.Test
             Assert.Equal(model.Symbol, cur.NewMainCurrencySymbol);
 
         }
-        [Fact]
-        public void Test1()
-        {
-
-        }
+       
     }
 }
