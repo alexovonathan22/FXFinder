@@ -51,14 +51,14 @@ namespace FXFinder.Test
             //Arrange
             var model = new CurrencyChangeModel
             {
-                Symbol = "EUR",
+                Symbol = "USD",
                 UserId = 2
             };
 
             var cur = new CurrencyChange
             {
-                FormerMainCurrencyTitle = "usd",
-                NewMainCurrencySymbol = "EUR"
+                FormerMainCurrencyTitle = "eur",
+                NewMainCurrencySymbol = "Usd"
 
             };
             var currMgr = new Mock<ICurrencyManager>();
