@@ -65,9 +65,9 @@ namespace FXFinder.Test
             currMgr.Setup(t => t.ChangeMainCurrency("kpb", model.UserId)).ReturnsAsync((cur, string.Empty));
             var _sut = new CurrencyController(currMgr.Object);
             //Act
-            var output = await _sut.ChangeUserCurrency(model);
+            var result = await _sut.ChangeUserCurrency(model);
 
-            Assert.IsType<BadRequestObjectResult>(output);
+            Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(model.Symbol, cur.NewMainCurrencySymbol);
 
         }
