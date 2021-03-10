@@ -58,7 +58,7 @@ namespace FXFinder.Test
             var cur = new CurrencyChange
             {
                 FormerMainCurrencyTitle = "eur",
-                NewMainCurrencySymbol = "Usd"
+                NewMainCurrencySymbol = "USD"
 
             };
             var currMgr = new Mock<ICurrencyManager>();
