@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using FXFinder.Core.Managers.Interfaces;
 using FXFinder.Core.Models;
 using FXFinder.Core.Util;
+using FXFinder.Core.DBModels;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -149,7 +150,7 @@ namespace FXFinder.API.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost("verify")]
-        [Authorize(Policy = "AuthorizedUser")]
+        [Authorize(Policy = AuthorizedUserTypes.Users)]
         public async Task<IActionResult> VerifyUser(OneTimePassword model)
         {
             var response = new APIResponse();
@@ -164,6 +165,26 @@ namespace FXFinder.API.Controllers
                 return Ok(response);
             }
             response.ApiMessage = message;
+
+            return BadRequest(response);
+        }
+
+        [HttpGet("users")]
+        [Authorize(Policy = AuthorizedUserTypes.Admin)]
+        public async Task<IActionResult> GetAllUsers(OneTimePassword model)
+        {
+            var response = new APIResponse();
+            response.StatusCode = "01";
+            response.Result = null;
+            var users = await _auth.GetAppUsers(); 
+            if (users != null)
+            {
+                response.Result = users;
+                response.StatusCode = "00";
+                response.ApiMessage = "Retrieved available users";
+                return Ok(response);
+            }
+            response.ApiMessage = "No users";
 
             return BadRequest(response);
         }

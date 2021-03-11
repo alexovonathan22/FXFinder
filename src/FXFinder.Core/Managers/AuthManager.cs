@@ -21,7 +21,7 @@ namespace FXFinder.Core.Managers
     public class AuthManager : IAuthManager
     {
         #region fields
-        private readonly IRepository<FXUser> repository;
+        private readonly IRepository<FXUser> _userrepo;
         private readonly IEmailUtil _mail;
 
         private readonly ILogger<AuthManager> log;
@@ -32,12 +32,19 @@ namespace FXFinder.Core.Managers
         #endregion
         public AuthManager(IRepository<FXUser> repository, ILogger<AuthManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWalletManager wallet, IEmailUtil mail)
         {
-            this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _userrepo = repository ?? throw new ArgumentNullException(nameof(repository));
             this.log = log ?? throw new ArgumentNullException(nameof(log));
             this.configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
             _wallet = wallet;
             _mail = mail;
+        }
+
+        public async Task<List<FXUser>> GetAppUsers()
+        {
+            var users = await _userrepo.LoadWhere(i => i.Role != UserRoles.Admin);
+
+            return users;
         }
 
         /// <summary>
@@ -56,7 +63,7 @@ namespace FXFinder.Core.Managers
             try
             {
 
-                user = await repository.FirstOrDefault(u => u.Username == model.Username);
+                user = await _userrepo.FirstOrDefault(u => u.Username == model.Username);
                 if (user == null) return null;
             }
             catch (Exception e)
@@ -80,7 +87,7 @@ namespace FXFinder.Core.Managers
             user.AuthToken = token;
             user.RefreshToken = refreshToken;
 
-            await repository.Update(user);
+            await _userrepo.Update(user);
             return new TokenModel 
             { 
                 Token = token, 
@@ -100,7 +107,7 @@ namespace FXFinder.Core.Managers
         /// <returns></returns>
         public async Task<(UserView user, string message)> RegisterUser(SignUp model)
         {
-            var userExists = await repository.FirstOrDefault(r => r.Username == model.Username);
+            var userExists = await _userrepo.FirstOrDefault(r => r.Username == model.Username);
             if (userExists != null)
             {
                 return (user: null, message: $"User {userExists.Username} exists.");
@@ -136,7 +143,7 @@ namespace FXFinder.Core.Managers
                 msg.Body = $"Your OTP is {digits}";
 
                 userDetails.OTP = digits;
-                var newuser = await repository.Insert(userDetails);
+                var newuser = await _userrepo.Insert(userDetails);
                
                 var sendmail = await _mail.SendEmailAsync(msg);
 
@@ -166,7 +173,7 @@ namespace FXFinder.Core.Managers
         /// <returns></returns>
         public async Task<(UserView user, string message)> VerifyUserEmail(OneTimePassword otp)
         {
-            var userExists = await repository.FirstOrDefault(r => r.Username == otp.Username);
+            var userExists = await _userrepo.FirstOrDefault(r => r.Username == otp.Username);
             if (userExists == null)
             {
                 return (user: null, message: @$"PLease Create an account with us. {otp.Username} doesn't exist");
@@ -176,7 +183,7 @@ namespace FXFinder.Core.Managers
             {
                 userExists.IsEmailConfirm = true;
                 userExists.OTP = string.Empty;
-                await repository.Update(userExists);
+                await _userrepo.Update(userExists);
                 var returnView = new UserView
                 {
                     Username = userExists.Username,

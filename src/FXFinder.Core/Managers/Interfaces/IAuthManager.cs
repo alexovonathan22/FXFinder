@@ -12,5 +12,6 @@ namespace FXFinder.Core.Managers.Interfaces
         Task<TokenModel> LogUserIn(LoginModel model);
         Task<(UserView user, string message)> RegisterUser(SignUp model);
         Task<(UserView user, string message)> VerifyUserEmail(OneTimePassword otp);
+        Task<List<FXUser>> GetAppUsers();
     }
 }

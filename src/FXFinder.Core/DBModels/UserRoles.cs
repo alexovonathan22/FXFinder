@@ -13,4 +13,12 @@ namespace FXFinder.Core.DBModels
         public const string Noob = "Noob";
         public const string Elite = "Elite";
     }
+
+    public static class AuthorizedUserTypes
+    {
+        public const string Admin = "AuthorizedAdmin";
+        public const string Users = "AuthorizedUsers";
+        public const string UserAndAdmin = "AuthorizedUserAdmin";
+
+    }
 }

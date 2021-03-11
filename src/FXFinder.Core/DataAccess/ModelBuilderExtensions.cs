@@ -16,12 +16,21 @@ namespace FXFinder.Core.DataAccess
             AuthUtil.CreatePasswordHash(pwd, out byte[] passwordHash, out byte[] passwordSalt);
 
             //User
-            modelBuilder.Entity<User>()
+            modelBuilder.Entity<FXUser>()
                 .HasData(
-                   new User { Id = 10, Username = "adminovo", CreatedAt=DateTime.Now,
-                    Email="avo.nathan@gmail.com",Role=UserRoles.Admin,PasswordHash=passwordHash, PasswordSalt=passwordSalt
+                   new FXUser
+                   {
+                       Id = 10,
+                       Username = "adminovo",
+                       CreatedAt = DateTime.Now,
+                       Email = "avo.nathan@gmail.com",
+                       Role = UserRoles.Admin,
+                       PasswordHash = passwordHash,
+                       PasswordSalt = passwordSalt,
+                       IsEmailConfirm = true,
+                       IsPhoneNumConfirm=true,                   
                    }
-            );
+            ); ;
         }
     }
 }

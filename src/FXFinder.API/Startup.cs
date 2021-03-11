@@ -71,16 +71,16 @@ namespace FXFinder.API
             services.AddAuthorization(opt =>
             {
                 //Just the admin
-                opt.AddPolicy("AuthorizedAdmin", policy =>
+                opt.AddPolicy(AuthorizedUserTypes.Admin, policy =>
 
                 policy.RequireRole(UserRoles.Admin));
 
                 // Just the user
-                opt.AddPolicy("AuthorizedUsers", policy =>
+                opt.AddPolicy(AuthorizedUserTypes.Users, policy =>
 
                 policy.RequireRole(UserRoles.User));
                 // user and admin
-                opt.AddPolicy("AuthorizedUserAdmin", policy =>
+                opt.AddPolicy(AuthorizedUserTypes.UserAndAdmin, policy =>
 
                 policy.RequireRole(UserRoles.User, UserRoles.Admin));
 
