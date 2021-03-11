@@ -29,6 +29,14 @@ namespace FXFinder.API.Controllers
         }
 
 
+        //Test Controller for Azure Deployment
+        [AllowAnonymous]
+        [HttpGet("test")]
+        public IActionResult TestController()
+        {
+            return Ok("Azure tests successful");
+        }
+
         /// <summary>
         /// This endpoint creates a wallet for users
         /// Payload to pass is shown below
