@@ -14,7 +14,7 @@ namespace FXFinder.Core.Util
         public string StatusCode { get; set; } = "01";
         public string ApiMessage { get; set; }
         public object? Result { get; set; }
-        public object? Error { get; set; }
+        //public object? Error { get; set; }
 
     }
 }

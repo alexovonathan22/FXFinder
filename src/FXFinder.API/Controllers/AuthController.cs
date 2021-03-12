@@ -51,7 +51,6 @@ namespace FXFinder.API.Controllers
             var response = new APIResponse();
             response.ApiMessage = $"Error: Login credentials incorrect!";
             response.StatusCode = "01";
-            response.Error = null;
             var jwt = await _auth.LogUserIn(user);
             if (jwt != null)
             {
@@ -89,7 +88,6 @@ namespace FXFinder.API.Controllers
         {
             var response = new APIResponse();
             response.StatusCode = "01";
-            response.Error = null;
             var (user, message) = await _auth.RegisterUser(userdto); 
             if (user != null)
             {

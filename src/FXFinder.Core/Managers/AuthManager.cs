@@ -115,9 +115,9 @@ namespace FXFinder.Core.Managers
             // Validate Email-add in-app
             var (IsValid, Email) = AuthUtil.ValidateEmail(model.Email);
 
-            if (IsValid == false)
+            if (IsValid == false || model.Password.Length == 0)
             {
-                return (user: null, message: $"Email format incorrect.");
+                return (user: null, message: $"Email format incorrect. or Password not inputed");
             }
 
             if (userExists == null)
@@ -137,15 +137,17 @@ namespace FXFinder.Core.Managers
                 //Send verification notification 
                 Random rand = new Random();
                 string digits = rand.Next(0, 999999).ToString("D6");
-                var msg = new EmailMessage();
-                msg.ToEmail = model.Email;
-                msg.Subject = $"Security Code - OTP";
-                msg.Body = $"Your OTP is {digits}";
+                var prepMessageDetails = new EmailMessage();
+                prepMessageDetails.ToEmail = model.Email;
+                prepMessageDetails.Subject = $"Security Code - OTP";
+                prepMessageDetails.Body = $"Your OTP is {digits}";
 
                 userDetails.OTP = digits;
-                var newuser = await _userrepo.Insert(userDetails);
                
-                var sendmail = await _mail.SendEmailAsync(msg);
+                var newuser = await _userrepo.Insert(userDetails);
+
+                //send email to user
+                var sendmail = await _mail.SendEmailAsync(prepMessageDetails);
 
                 if (sendmail)
                 {

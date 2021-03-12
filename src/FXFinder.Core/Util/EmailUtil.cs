@@ -49,7 +49,7 @@ namespace FXFinder.Core.Util
             }
             catch (Exception)
             {
-                _log.LogInformation($"Error occured sending email to {message.ToEmail}");
+                _log.LogError($"Error occured sending email to {message.ToEmail}");
 
                 return false;
             }
