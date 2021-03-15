@@ -61,6 +61,30 @@ namespace FXFinder.API.Controllers
             return BadRequest(response);
         }
 
-      
+        /// <summary>
+        /// This endpoint is responsible for fetching all 
+        /// trade currencies.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> FetchCurrencies()
+        {
+            var response = new APIResponse();
+            var (entity, message) = await _currencyManager.FetchCurrencies();
+            if (entity != null)
+            {
+                response.Result = entity;
+                response.ApiMessage = message;
+                response.StatusCode = "00";
+                return Ok(response);
+            }
+            response.ApiMessage = message;
+            response.Result = entity;
+
+            return BadRequest(response);
+        }
+
+
+
     }
 }

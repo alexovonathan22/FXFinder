@@ -27,13 +27,16 @@ namespace FXFinder.Core.Util
             {
                 return false;
             }
-            var email = new MimeMessage();
-            email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
+            var email = new MimeMessage
+            {
+                Sender = MailboxAddress.Parse(_mailSettings.Mail)
+            };
             email.To.Add(MailboxAddress.Parse(message.ToEmail));
             email.Subject = message.Subject;
-            var builder = new BodyBuilder();
-              
-            builder.HtmlBody = message.Body;
+            var builder = new BodyBuilder
+            {
+                HtmlBody = message.Body
+            };
             email.Body = builder.ToMessageBody();
             using var smtp = new SmtpClient();
             smtp.Connect(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);

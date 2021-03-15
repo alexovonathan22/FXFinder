@@ -129,5 +129,10 @@ namespace FXFinder.Core.Managers
             }
             
         }
+
+        public Task<(CurrencyModel entity, string message)> FetchCurrencies()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

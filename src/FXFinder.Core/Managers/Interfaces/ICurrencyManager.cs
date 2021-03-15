@@ -10,6 +10,7 @@ namespace FXFinder.Core.Managers.Interfaces
     {
         Task<(CurrencyChange entity, string message)> ChangeMainCurrency(string symbol, int userid);
         Task<(ConversionModel entity, string message)> CurrencyConversion(string from, string to, decimal amount);
+        Task<(CurrencyModel entity, string message)> FetchCurrencies();
 
     }
 }
