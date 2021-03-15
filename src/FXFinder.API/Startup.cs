@@ -42,7 +42,7 @@ namespace FXFinder.API
         public void ConfigureServices(IServiceCollection services)
         {
             var jwtSecret = Configuration["JwtSettings:Secret"];
-            var connstr = Configuration["ConnectionString:FXFinder.ConnectionString"];
+            var connstr = Configuration["FXFinder.ConnectionString"];
             var baseurl = Configuration["BaseFixerUrl"];
             var pwd = Configuration["JwtSettings:Password"];
             // for docker db
