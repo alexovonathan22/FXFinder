@@ -67,6 +67,8 @@ namespace FXFinder.API.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
+        [HttpPost("fetchcurrencies")]
+        [Authorize(Policy = "AuthorizedUsers")]
         public async Task<IActionResult> FetchCurrencies()
         {
             var response = new APIResponse();
