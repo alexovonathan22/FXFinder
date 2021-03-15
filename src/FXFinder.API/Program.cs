@@ -17,10 +17,16 @@ namespace FXFinder.API
         {
             var host = CreateHostBuilder(args)
                          .Build();
+            //Microsoft.AspNetCore.Hosting.IHostingEnvironment env;
             //Read Configuration from appSettings
             //remove log to console when in production
+            //var builder = new ConfigurationBuilder()
+            //   .SetBasePath(env.ContentRootPath)
+            //   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            //   .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+            //   .AddEnvironmentVariables();
             var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
             //Initialize Logger
             Log.Logger = new LoggerConfiguration()
