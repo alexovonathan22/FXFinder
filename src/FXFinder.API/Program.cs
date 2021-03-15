@@ -26,7 +26,7 @@ namespace FXFinder.API
             //   .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
             //   .AddEnvironmentVariables();
             var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.json")
                 .Build();
             //Initialize Logger
             Log.Logger = new LoggerConfiguration()
