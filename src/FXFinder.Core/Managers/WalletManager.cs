@@ -65,7 +65,7 @@ namespace FXFinder.Core.Managers
                return (entity: null, Message: $"Admin Can't create a wallet");
             }
 
-            if (userInDb == null) return (entity: null, Message: $"{userCtx}, you need to verify your email or phone number.");
+            if (userInDb == null) return (entity: null, Message: $"{userCtx}, you need to register.");
 
             //If User is verified go ahead and create the wallet in specified currency
             var create = await GenerateWallet(userInDb, toCapsSymbol,symbolName,userCtx);
@@ -120,8 +120,8 @@ namespace FXFinder.Core.Managers
         {
             Random random = new Random();
             // Any random integer   
-            int num = random.Next(10000, 9999999);
-            var walletAcctDigit = $"10{num}";
+            int generateAcctDigits = random.Next(10000, 9999999);
+            var walletAcctDigit = $"10{generateAcctDigits}";
             var newWallet = new Wallet
             {
                 CurrnencyTitle = symbolName,

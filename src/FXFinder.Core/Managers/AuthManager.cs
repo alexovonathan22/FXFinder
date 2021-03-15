@@ -107,7 +107,7 @@ namespace FXFinder.Core.Managers
         /// <returns></returns>
         public async Task<(UserView user, string message)> RegisterUser(SignUp model)
         {
-            var userExists = await _userrepo.FirstOrDefault(r => r.Username == model.Username);
+            var userExists = await _userrepo.FirstOrDefault(r => r.Username == model.Username || r.Email == model.Email);
             if (userExists != null)
             {
                 return (user: null, message: $"User {userExists.Username} exists.");
@@ -139,9 +139,10 @@ namespace FXFinder.Core.Managers
                 string digits = rand.Next(0, 999999).ToString("D6");
                 var prepMessageDetails = new EmailMessage();
                 prepMessageDetails.ToEmail = model.Email;
-                prepMessageDetails.Subject = $"Security Code - OTP";
+                prepMessageDetails.Subject = $"Verify your Email";
                 prepMessageDetails.Body = $"Your OTP is {digits}";
 
+                // TODO: Set expiry on OTP.
                 userDetails.OTP = digits;
                
                 var newuser = await _userrepo.Insert(userDetails);
