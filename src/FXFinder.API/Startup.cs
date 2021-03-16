@@ -54,7 +54,7 @@ namespace FXFinder.API
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IEmailUtil, EmailUtil>();
 
-            services.AddDbContext<WalletDbContext>(options => options.UseSqlServer(connstringazure, c => c.MigrationsAssembly("FXFinder.Core")));
+            services.AddDbContext<WalletDbContext>(options => options.UseSqlServer("Data Source=myserveronazureovo.database.windows.net;Initial Catalog=fxfinderDb;Persist Security Info=True;User ID=aeon;Password=@Nathan2", c => c.MigrationsAssembly("FXFinder.Core")));
 
             #region Managers
 
