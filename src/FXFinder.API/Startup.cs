@@ -42,7 +42,8 @@ namespace FXFinder.API
         public void ConfigureServices(IServiceCollection services)
         {
             var jwtSecret = Configuration["JwtSettings:Secret"];
-            var connstr = Configuration["ConnectionString:FXFinder.ConnectionString"];
+            var connstringazure = Configuration.GetConnectionString("FXFinder.ConnectionString");
+            //var connstr = Configuration["ConnectionStrings:FXFinder.ConnectionString"];
             var baseurl = Configuration["BaseFixerUrl"];
             var pwd = Configuration["JwtSettings:Password"];
             // for docker db
@@ -53,7 +54,7 @@ namespace FXFinder.API
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IEmailUtil, EmailUtil>();
 
-            services.AddDbContext<WalletDbContext>(options => options.UseSqlServer(connstr, c => c.MigrationsAssembly("FXFinder.Core")));
+            services.AddDbContext<WalletDbContext>(options => options.UseSqlServer(connstringazure, c => c.MigrationsAssembly("FXFinder.Core")));
 
             #region Managers
 
