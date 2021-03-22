@@ -46,9 +46,7 @@ namespace FXFinder.API
             //var connstr = Configuration["ConnectionStrings:FXFinder.ConnectionString"];
             var baseurl = Configuration["BaseFixerUrl"];
             var pwd = Configuration["JwtSettings:Password"];
-            // for docker db
-            //var connectionstr = $@"Server=db,1433;Initial Catalog=walletsystem;User ID=aeon;Password={pwd};";
-
+         
             //  Repo Service
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
