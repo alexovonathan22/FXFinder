@@ -16,7 +16,6 @@ namespace FXFinder.Core.Managers
     public class WalletManager : IWalletManager
     {
         #region Fields 
-        private readonly IRepository<User> _userrepo;
         private readonly IRepository<FXUser> _fxuser;
         protected WalletDbContext Context;
         private readonly IRepository<Wallet> _walletrepo;
@@ -27,9 +26,8 @@ namespace FXFinder.Core.Managers
         #endregion 
 
         #region Constructors
-        public WalletManager(IRepository<User> userrepo, ILogger<WalletManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IRepository<Wallet> walletrepo, ICurrencyManager currency, WalletDbContext context, IRepository<FXUser> fxuser)
+        public WalletManager(ILogger<WalletManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IRepository<Wallet> walletrepo, ICurrencyManager currency, WalletDbContext context, IRepository<FXUser> fxuser)
         {
-            _userrepo = userrepo ?? throw new ArgumentNullException(nameof(userrepo));
             _walletrepo = walletrepo ?? throw new ArgumentNullException(nameof(walletrepo));
             this.log = log ?? throw new ArgumentNullException(nameof(log));
             this.configuration = configuration;
@@ -73,7 +71,7 @@ namespace FXFinder.Core.Managers
             return create;
         }
 
-        private async Task<(WalletView entity, string Message)> GenerateEliteWallet(User userInDb, string toCapsSymbol, string symbolName, string userCtx, decimal amt)
+        private async Task<(WalletView entity, string Message)> GenerateEliteWallet(FXUser userInDb, string toCapsSymbol, string symbolName, string userCtx, decimal amt)
         {
             Random random = new Random();
             // Any random integer   
@@ -161,14 +159,14 @@ namespace FXFinder.Core.Managers
 
             var symbolName = configuration[$"SupportedSymbols:{toCapsSymbol}"];
             if (string.IsNullOrEmpty(symbolName)) return (entity: null, Message: $"Enter a correct currency symbol, {toCapsSymbol} incorrect.");
-            var userInDb = await _userrepo.FirstOrDefault(u => u.Username == userCtx);
+            var userInDb = await _fxuser.FirstOrDefault(u => u.Username == userCtx);
 
             // funding by admin for elite or noob
 
             if (userInDb.Role == UserRoles.Admin)
             {
                 if (model.UserId < 1) return (entity: null, Message: $"You need to provide a User Id.");
-                var getUserToFund = await _userrepo.FirstOrDefault(d => d.Id == model.UserId);
+                var getUserToFund = await _fxuser.FirstOrDefault(d => d.Id == model.UserId);
 
                 var walletquery = from userWallet in Context.WalletAccts
                             where getUserToFund.Id == userWallet.UserId
@@ -179,12 +177,12 @@ namespace FXFinder.Core.Managers
                 if (getUserToFund.Role == UserRoles.Noob)
                 {
 
-                    return await FundNoob(fundedResponse, toCapsSymbol, userInDb, model, userWallets);
+                    return await FundNoob(fundedResponse, toCapsSymbol, null, model, userWallets);
                 }
 
                 if (getUserToFund.Role == UserRoles.Elite)
                 {
-                    return await FundElite(fundedResponse, symbolName, toCapsSymbol, userCtx, getUserToFund, model, userWallets, userInDb);
+                    return await FundElite(fundedResponse, symbolName, toCapsSymbol, userCtx, null, model, userWallets, null);
                 }
             }
             if (userInDb == null) return (entity: null, Message: $"Log in to fund wallet");
@@ -197,7 +195,7 @@ namespace FXFinder.Core.Managers
             // funding for noob
             if (userInDb.Role == UserRoles.Noob)
             {
-                return await FundNoob(fundedResponse, toCapsSymbol, userInDb, model, userWalletInContext);
+                return await FundNoob(fundedResponse, toCapsSymbol, null, model, userWalletInContext);
             }
 
             // funding for elite
@@ -205,7 +203,7 @@ namespace FXFinder.Core.Managers
             {
 
 
-                return await FundElite(fundedResponse,symbolName,toCapsSymbol, userCtx, userInDb, model, userWalletInContext);
+                return await FundElite(fundedResponse,symbolName,toCapsSymbol, userCtx, null, model, userWalletInContext);
                 
             }
            
@@ -227,7 +225,7 @@ namespace FXFinder.Core.Managers
         /// <param name="model"></param>
         /// <param name="uwallet"></param>
         /// <returns></returns>
-        private async Task<(FundedWalletRespnse entity, string Message)> FundElite(FundedWalletRespnse response, string symbolname, string symbolCaps ,string userctx,User userInDb, FundWalletModel model, List<Wallet> uwallet, User adminInCtx =null)
+        private async Task<(FundedWalletRespnse entity, string Message)> FundElite(FundedWalletRespnse response, string symbolname, string symbolCaps ,string userctx,FXUser userInDb, FundWalletModel model, List<Wallet> uwallet, FXUser adminInCtx =null)
         {
             if (model == null)
             {
@@ -305,7 +303,7 @@ namespace FXFinder.Core.Managers
 
         }
 
-        private async Task<(FundedWalletRespnse entity, string Message)> FundNoob(FundedWalletRespnse fundedResponse, string symbolCaps, User userInDb, FundWalletModel model, List<Wallet > uwallet)
+        private async Task<(FundedWalletRespnse entity, string Message)> FundNoob(FundedWalletRespnse fundedResponse, string symbolCaps, FXUser userInDb, FundWalletModel model, List<Wallet > uwallet)
         {
             //var getUserWallet = await _walletrepo.FirstOrDefault(t => t.UserId == userInDb.Id);
             var getUserWallet = uwallet.FirstOrDefault(r => r.UserId == userInDb.Id);
@@ -391,7 +389,7 @@ namespace FXFinder.Core.Managers
 
             var symbolName = configuration[$"SupportedSymbols:{toCapsSymbol}"];
             if (string.IsNullOrEmpty(symbolName)) return (entity: null, Message: $"Enter a correct currency symbol, {toCapsSymbol} incorrect.");
-            var userInDb = await _userrepo.FirstOrDefault(u => u.Username == userCtx);
+            var userInDb = await _fxuser.FirstOrDefault(u => u.Username == userCtx);
             if (userInDb == null) return (entity: null, Message: $"User not found.");
             if (userInDb.Role == UserRoles.Noob)
             {
@@ -446,7 +444,7 @@ namespace FXFinder.Core.Managers
                 var getEliteWallets = await _walletrepo.LoadWhere(t => t.UserId == userInDb.Id);
 
                 // Find main currency wallet with the passed currency and wallet acct digits
-                var eliteMainCurrWallet = getEliteWallets.FirstOrDefault(r => r.CurrencySymbol == userInDb.CurrencySymbol && r.UserId == userInDb.Id && r.IsMainCurrency==true);
+                var eliteMainCurrWallet = getEliteWallets.FirstOrDefault(r => r.CurrencySymbol == null && r.UserId == userInDb.Id && r.IsMainCurrency==true);
                 if (eliteMainCurrWallet != null && eliteMainCurrWallet.GrandAmount > model.Amount)
                 {
                     var withdraw = eliteMainCurrWallet.GrandAmount - model.Amount;
@@ -503,7 +501,7 @@ namespace FXFinder.Core.Managers
                 {
                     // in the case Wallet balance is less,
                     // Convert Amount to be withdrawn to main currency.
-                    var (conversionresult, message) = await _currency.CurrencyConversion(toCapsSymbol, userInDb.CurrencySymbol, model.Amount);
+                    var (conversionresult, message) = await _currency.CurrencyConversion(toCapsSymbol, "", model.Amount);
                     if (conversionresult == null) return (entity: null, Message: $"An error occurred.");
 
                     // If main currency acct is > amount passed do the withdrawal else return appropriate message.
@@ -550,7 +548,7 @@ namespace FXFinder.Core.Managers
             
             if(string.IsNullOrEmpty(model)) return (entity: null, Message: $"Check your params");
             var userCtx = _httpContextAccessor.HttpContext.User.Identity.Name;
-            var userInDb = await _userrepo.FirstOrDefault(u => u.Username == userCtx);
+            var userInDb = await _fxuser.FirstOrDefault(u => u.Username == userCtx);
 
            
             var checkWallet = await _walletrepo.FirstOrDefault(e => e.UserId == userInDb.Id && e.AcctDigits==model);
@@ -573,7 +571,7 @@ namespace FXFinder.Core.Managers
         public async Task<(ApprovedFundsModel entity, string Message)> ApproveFunds()
         {
             var userCtx = _httpContextAccessor.HttpContext.User.Identity.Name;
-            var userInDb = await _userrepo.FirstOrDefault(u => u.Username == userCtx);
+            var userInDb = await _fxuser.FirstOrDefault(u => u.Username == userCtx);
 
             if (userInDb.Role == UserRoles.Admin) 
             {

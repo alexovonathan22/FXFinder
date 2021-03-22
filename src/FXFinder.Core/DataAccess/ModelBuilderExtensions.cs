@@ -20,7 +20,7 @@ namespace FXFinder.Core.DataAccess
                 .HasData(
                    new FXUser
                    {
-                       Id = 10,
+                       Id = 1,
                        Username = "adminovo",
                        CreatedAt = DateTime.Now,
                        Email = "avo.nathan@gmail.com",

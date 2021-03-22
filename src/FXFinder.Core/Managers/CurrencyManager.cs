@@ -19,7 +19,7 @@ namespace FXFinder.Core.Managers
     public class CurrencyManager : ICurrencyManager
     {
         #region fields
-        private readonly IRepository<User> _userrepository;
+        private readonly IRepository<FXUser> _userrepository;
         private readonly IRepository<Wallet> _wallet;
         private readonly WalletDbContext _ctx;
         private readonly ILogger<CurrencyManager> log;
@@ -28,7 +28,7 @@ namespace FXFinder.Core.Managers
         public IHttpClientFactory _httpClientFactory { get; set; }
 
         #endregion
-        public CurrencyManager(IRepository<User> userrepository, ILogger<CurrencyManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, IRepository<Wallet> wallet = null, WalletDbContext ctx = null)
+        public CurrencyManager(IRepository<FXUser> userrepository, ILogger<CurrencyManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IHttpClientFactory httpClientFactory, IRepository<Wallet> wallet = null, WalletDbContext ctx = null)
         {
             _userrepository = userrepository ?? throw new ArgumentNullException(nameof(userrepository));
             this.log = log ?? throw new ArgumentNullException(nameof(log));
@@ -61,36 +61,36 @@ namespace FXFinder.Core.Managers
             var userToChangeCurrency = await _userrepository.LoadById(userid);
             var userWalletToChangeCurr = await _wallet.FirstOrDefault(r => r.UserId == userToChangeCurrency.Id && r.IsMainCurrency==true);
             if (userToChangeCurrency == null) return (entity: null, message: $"User doesnt exist.");
-            if (toCapsSymbol == userToChangeCurrency.CurrencySymbol) return (entity: null, message: $"Provide a new currency. {toCapsSymbol} is what you {userToChangeCurrency.Username} use.");
+            //if (toCapsSymbol == userToChangeCurrency.CurrencySymbol) return (entity: null, message: $"Provide a new currency. {toCapsSymbol} is what you {userToChangeCurrency.Username} use.");
 
 
             var userModel = userToChangeCurrency;
-            var OldSymbol = userToChangeCurrency.CurrencySymbol;
-            var OldSymbolTitle = userToChangeCurrency.CurrencyTitle;
+            //var OldSymbol = userToChangeCurrency.CurrencySymbol;
+            //var OldSymbolTitle = userToChangeCurrency.CurrencyTitle;
 
-            userModel.CurrencySymbol = toCapsSymbol;
-            userModel.CurrencyTitle = symbolName;
+            //userModel.CurrencySymbol = toCapsSymbol;
+            //userModel.CurrencyTitle = symbolName;
             try
             {
-                var (entity, message) = await CurrencyConversion(OldSymbol, userModel.CurrencySymbol, userWalletToChangeCurr.GrandAmount);
+                //var (entity, message) = await CurrencyConversion(OldSymbol, userModel.CurrencySymbol, userWalletToChangeCurr.GrandAmount);
 
-                userWalletToChangeCurr.GrandAmount = entity.Result;
-                userWalletToChangeCurr.Amount = entity.Result;
-                userWalletToChangeCurr.IsCurrencyConverted = entity.Success;
-                userWalletToChangeCurr.User = userModel;
+                //userWalletToChangeCurr.GrandAmount = entity.Result;
+                //userWalletToChangeCurr.Amount = entity.Result;
+                //userWalletToChangeCurr.IsCurrencyConverted = entity.Success;
+                //userWalletToChangeCurr.User = userModel;
                 
-                await _userrepository.Update(userModel);
-                await _wallet.Update(userWalletToChangeCurr);
+                //await _userrepository.Update(userModel);
+                //await _wallet.Update(userWalletToChangeCurr);
 
-                var curr = new CurrencyChange
-                {
-                    FormerMainCurrencySymbol = OldSymbol,
-                    FormerMainCurrencyTitle = OldSymbolTitle,
-                    NewMainCurrencySymbol = toCapsSymbol,
-                    NewMainCurrencyTitle = symbolName,
-                    NewAmountInWalletWithChangedCurr = $"{toCapsSymbol} {userWalletToChangeCurr.GrandAmount}"
-                };
-                return (entity: curr, message: $"Successfully changed currency.");
+                //var curr = new CurrencyChange
+                //{
+                //    FormerMainCurrencySymbol = OldSymbol,
+                //    FormerMainCurrencyTitle = OldSymbolTitle,
+                //    NewMainCurrencySymbol = toCapsSymbol,
+                //    NewMainCurrencyTitle = symbolName,
+                //    NewAmountInWalletWithChangedCurr = $"{toCapsSymbol} {userWalletToChangeCurr.GrandAmount}"
+                //};
+                return (entity: null, message: $"Successfully changed currency.");
             }
             catch
             {

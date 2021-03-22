@@ -16,14 +16,14 @@ namespace FXFinder.Core.Managers
     public class AdminManager : IAdminManager
     {
         #region fields
-        private readonly IRepository<User> repository;
+        private readonly IRepository<FXUser> repository;
         private readonly ILogger<AdminManager> log;
         private readonly IConfiguration configuration;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 
         #endregion
-        public AdminManager(IRepository<User> repository, ILogger<AdminManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+        public AdminManager(IRepository<FXUser> repository, ILogger<AdminManager> log, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
             this.log = log ?? throw new ArgumentNullException(nameof(log));

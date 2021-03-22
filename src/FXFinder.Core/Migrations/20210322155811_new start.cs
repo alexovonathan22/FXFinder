@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace FXFinder.Core.Migrations
 {
-    public partial class Newmigration : Migration
+    public partial class newstart : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,18 +15,22 @@ namespace FXFinder.Core.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedAt = table.Column<DateTime>(nullable: true),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: false),
-                    ModifiedBy = table.Column<int>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    ModifiedBy = table.Column<string>(nullable: true),
                     ActionTaken = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     Username = table.Column<string>(nullable: true),
-                    CurrencySymbol = table.Column<string>(nullable: true),
-                    CurrencyTitle = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    FirstName = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
                     AuthToken = table.Column<string>(nullable: true),
                     RefreshToken = table.Column<string>(nullable: true),
                     Role = table.Column<string>(nullable: true),
+                    IsEmailConfirm = table.Column<bool>(nullable: false),
+                    IsPhoneNumConfirm = table.Column<bool>(nullable: false),
                     PasswordHash = table.Column<byte[]>(nullable: true),
-                    PasswordSalt = table.Column<byte[]>(nullable: true)
+                    PasswordSalt = table.Column<byte[]>(nullable: true),
+                    OTP = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,14 +45,16 @@ namespace FXFinder.Core.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreatedAt = table.Column<DateTime>(nullable: true),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
-                    CreatedBy = table.Column<int>(nullable: false),
-                    ModifiedBy = table.Column<int>(nullable: false),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    ModifiedBy = table.Column<string>(nullable: true),
                     ActionTaken = table.Column<string>(nullable: true),
-                    Amount = table.Column<decimal>(nullable: false),
+                    GrandAmount = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
+                    IsCurrencyConverted = table.Column<bool>(nullable: false),
+                    IsMainCurrency = table.Column<bool>(nullable: false),
+                    AcctDigits = table.Column<string>(nullable: true),
+                    CurrnencyTitle = table.Column<string>(nullable: true),
                     CurrencySymbol = table.Column<string>(nullable: true),
-                    CurrencyTitle = table.Column<string>(nullable: true),
-                    MainCurrency = table.Column<string>(nullable: true),
-                    MainCurrencySymbol = table.Column<string>(nullable: true),
                     UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -64,8 +70,8 @@ namespace FXFinder.Core.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "ActionTaken", "AuthToken", "CreatedAt", "CreatedBy", "CurrencySymbol", "CurrencyTitle", "Email", "ModifiedAt", "ModifiedBy", "PasswordHash", "PasswordSalt", "RefreshToken", "Role", "Username" },
-                values: new object[] { 1, null, null, new DateTime(2021, 1, 11, 15, 31, 0, 28, DateTimeKind.Local).AddTicks(1052), 0, null, null, "aov.nathan@gmail.com", null, 0, new byte[] { 19, 50, 154, 148, 16, 77, 126, 251, 230, 39, 147, 46, 162, 66, 221, 160, 186, 54, 206, 148, 99, 194, 76, 214, 230, 228, 238, 75, 206, 151, 124, 169, 203, 52, 181, 237, 226, 159, 7, 236, 230, 91, 34, 22, 10, 81, 160, 29, 90, 200, 66, 118, 121, 133, 79, 61, 113, 162, 217, 90, 206, 4, 90, 193 }, new byte[] { 228, 81, 100, 208, 36, 203, 69, 139, 182, 235, 178, 171, 214, 234, 207, 134, 110, 71, 69, 16, 25, 59, 253, 90, 146, 37, 220, 180, 202, 226, 216, 231, 151, 145, 132, 118, 79, 215, 151, 55, 130, 1, 129, 199, 62, 35, 246, 179, 81, 172, 118, 36, 11, 88, 16, 80, 107, 232, 145, 54, 93, 18, 104, 175, 46, 91, 199, 133, 65, 143, 193, 62, 81, 237, 114, 128, 119, 240, 202, 40, 82, 211, 120, 128, 100, 54, 2, 46, 197, 118, 190, 143, 36, 208, 144, 233, 134, 98, 110, 32, 40, 2, 97, 131, 100, 219, 136, 136, 139, 24, 66, 118, 210, 182, 30, 18, 48, 155, 184, 253, 227, 238, 252, 102, 216, 217, 232, 216 }, null, "Administrator", "The Admin" });
+                columns: new[] { "Id", "ActionTaken", "AuthToken", "CreatedAt", "CreatedBy", "Email", "FirstName", "IsEmailConfirm", "IsPhoneNumConfirm", "LastName", "ModifiedAt", "ModifiedBy", "OTP", "PasswordHash", "PasswordSalt", "PhoneNumber", "RefreshToken", "Role", "Username" },
+                values: new object[] { 1, null, null, new DateTime(2021, 3, 22, 16, 58, 10, 158, DateTimeKind.Local).AddTicks(4828), null, "avo.nathan@gmail.com", null, true, true, null, null, null, null, new byte[] { 249, 54, 1, 226, 149, 109, 207, 95, 138, 168, 129, 114, 173, 80, 138, 248, 161, 51, 16, 143, 135, 144, 187, 3, 5, 159, 28, 151, 194, 226, 200, 247, 123, 93, 219, 82, 201, 120, 45, 98, 31, 223, 165, 223, 176, 166, 15, 66, 192, 135, 42, 5, 242, 202, 79, 249, 147, 11, 183, 75, 157, 157, 36, 73 }, new byte[] { 232, 21, 212, 151, 74, 146, 63, 251, 12, 58, 31, 45, 92, 106, 95, 162, 218, 254, 176, 15, 174, 185, 62, 253, 115, 61, 211, 32, 252, 78, 125, 191, 7, 82, 2, 132, 155, 22, 139, 135, 51, 175, 51, 225, 158, 112, 106, 204, 35, 178, 120, 17, 19, 167, 67, 202, 85, 117, 127, 88, 38, 211, 255, 200, 92, 234, 52, 49, 226, 224, 144, 197, 149, 100, 251, 244, 58, 117, 201, 36, 176, 49, 158, 189, 214, 104, 243, 181, 3, 245, 125, 220, 190, 99, 0, 177, 144, 18, 27, 34, 69, 26, 235, 130, 121, 59, 16, 93, 93, 0, 52, 242, 238, 46, 199, 203, 227, 75, 232, 252, 1, 177, 167, 33, 200, 7, 229, 169 }, null, null, "Administrator", "adminovo" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_WalletAccts_UserId",

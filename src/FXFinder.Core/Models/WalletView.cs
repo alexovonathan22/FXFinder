@@ -10,7 +10,7 @@ namespace FXFinder.Core.Models
         public string CurrencyTitle { get; set; }
         public string CurrencySymbol { get; set; }
         public int UserId { get; set; }
-        public User UserCreated { get; set; }
+        public FXUser UserCreated { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
         public string CreatedBy { get; set; }

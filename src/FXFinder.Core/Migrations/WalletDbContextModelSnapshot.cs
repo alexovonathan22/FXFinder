@@ -87,73 +87,16 @@ namespace FXFinder.Core.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 10,
-                            CreatedAt = new DateTime(2021, 3, 22, 14, 43, 1, 275, DateTimeKind.Local).AddTicks(6950),
+                            Id = 1,
+                            CreatedAt = new DateTime(2021, 3, 22, 16, 58, 10, 158, DateTimeKind.Local).AddTicks(4828),
                             Email = "avo.nathan@gmail.com",
                             IsEmailConfirm = true,
                             IsPhoneNumConfirm = true,
-                            PasswordHash = new byte[] { 94, 74, 209, 206, 207, 94, 250, 208, 143, 53, 81, 250, 189, 212, 163, 23, 154, 162, 80, 126, 197, 189, 201, 102, 69, 18, 161, 175, 5, 248, 208, 224, 142, 172, 79, 240, 84, 81, 55, 123, 108, 1, 81, 137, 211, 67, 55, 57, 211, 3, 65, 204, 190, 170, 167, 161, 42, 42, 218, 22, 70, 37, 63, 200 },
-                            PasswordSalt = new byte[] { 146, 216, 107, 188, 164, 115, 109, 146, 189, 13, 244, 170, 137, 219, 46, 93, 112, 242, 213, 66, 5, 146, 21, 11, 48, 170, 73, 100, 71, 33, 126, 202, 83, 31, 80, 244, 192, 114, 152, 95, 213, 79, 1, 21, 151, 127, 205, 202, 141, 225, 212, 62, 81, 58, 244, 88, 118, 203, 21, 102, 31, 220, 115, 167, 235, 117, 244, 34, 154, 1, 123, 243, 99, 185, 142, 121, 120, 73, 69, 175, 175, 3, 178, 188, 215, 188, 189, 143, 125, 84, 207, 82, 176, 211, 62, 9, 186, 87, 124, 67, 41, 179, 39, 186, 227, 203, 7, 165, 140, 116, 171, 7, 200, 152, 71, 229, 15, 7, 108, 8, 162, 162, 226, 71, 55, 197, 148, 38 },
+                            PasswordHash = new byte[] { 249, 54, 1, 226, 149, 109, 207, 95, 138, 168, 129, 114, 173, 80, 138, 248, 161, 51, 16, 143, 135, 144, 187, 3, 5, 159, 28, 151, 194, 226, 200, 247, 123, 93, 219, 82, 201, 120, 45, 98, 31, 223, 165, 223, 176, 166, 15, 66, 192, 135, 42, 5, 242, 202, 79, 249, 147, 11, 183, 75, 157, 157, 36, 73 },
+                            PasswordSalt = new byte[] { 232, 21, 212, 151, 74, 146, 63, 251, 12, 58, 31, 45, 92, 106, 95, 162, 218, 254, 176, 15, 174, 185, 62, 253, 115, 61, 211, 32, 252, 78, 125, 191, 7, 82, 2, 132, 155, 22, 139, 135, 51, 175, 51, 225, 158, 112, 106, 204, 35, 178, 120, 17, 19, 167, 67, 202, 85, 117, 127, 88, 38, 211, 255, 200, 92, 234, 52, 49, 226, 224, 144, 197, 149, 100, 251, 244, 58, 117, 201, 36, 176, 49, 158, 189, 214, 104, 243, 181, 3, 245, 125, 220, 190, 99, 0, 177, 144, 18, 27, 34, 69, 26, 235, 130, 121, 59, 16, 93, 93, 0, 52, 242, 238, 46, 199, 203, 227, 75, 232, 252, 1, 177, 167, 33, 200, 7, 229, 169 },
                             Role = "Administrator",
                             Username = "adminovo"
                         });
-                });
-
-            modelBuilder.Entity("FXFinder.Core.DBModels.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ActionTaken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AuthToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CurrencySymbol")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CurrencyTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsEmailConfirm")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("PasswordHash")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("FXFinder.Core.DBModels.Wallet", b =>
@@ -211,8 +154,8 @@ namespace FXFinder.Core.Migrations
 
             modelBuilder.Entity("FXFinder.Core.DBModels.Wallet", b =>
                 {
-                    b.HasOne("FXFinder.Core.DBModels.User", "User")
-                        .WithMany("Wallets")
+                    b.HasOne("FXFinder.Core.DBModels.FXUser", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

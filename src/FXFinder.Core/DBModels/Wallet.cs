@@ -23,6 +23,6 @@ namespace FXFinder.Core.DBModels
         public string CurrencySymbol { get; set; }
         public int UserId { get; set; }
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public virtual FXUser User { get; set; }
     }
 }

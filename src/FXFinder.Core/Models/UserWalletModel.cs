@@ -8,7 +8,7 @@ namespace FXFinder.Core.Models
     public class UserWalletModel
     {
         public List<Wallet> Wallet { get; set; }
-        public User User { get; set; }
+        public FXUser User { get; set; }
 
     }
 }
