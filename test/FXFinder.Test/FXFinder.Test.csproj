@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\FXFinder.API\FXFinder.API.csproj" />
+    <ProjectReference Include="..\..\src\FXFinder.Core\FXFinder.Core.csproj" />
+
   </ItemGroup>
 
 </Project>

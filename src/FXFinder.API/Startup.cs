@@ -66,7 +66,7 @@ namespace FXFinder.API
 
             #region Auth/Auth Setup
 
-            services.AddAppAuthentication(jwtSecret);
+            services.AddAppAuthentication("##4rutufggnbooWEAREHEREmnnvo9485");
             services.AddAuthorization(opt =>
             {
                 //Just the admin
